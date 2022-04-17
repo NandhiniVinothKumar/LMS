@@ -1,5 +1,6 @@
 ﻿using DataLayer.Interface;
 using DataLayer.Model;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,26 +11,34 @@ namespace BusinessLayer
 {
    public class LeaveRequestService
     {
-        private readonly IRepository<LeaveRequest> _leaveRequest;
+        private readonly IRepository<EmployeeLeave> _leaveRequest;
+        private readonly ILoggerFactory loggerFactory;
        
         public LeaveRequestService()
         {
 
         }
-        public LeaveRequestService(IRepository<LeaveRequest> leaveRequest)
+        public LeaveRequestService(IRepository<EmployeeLeave> leaveRequest)
         {
             _leaveRequest = leaveRequest;
         }
 
         //Get Leave Request By  Id
-        public LeaveRequest GetRequeById(int Id)
+        public EmployeeLeave GetRequeById(int Id)
         {
-            return
-                _leaveRequest.GetById(Id);
+            try
+            {
+
+                return _leaveRequest.GetById(Id);
+            }
+            catch(Exception ex)
+            {
+                return null;
+            }
         }
 
         //Get Leave Details By employee Id
-        public LeaveRequest GetRequeByEmployeeId(string empId)
+        public EmployeeLeave GetRequeByEmployeeId(int empId)
         {
             return 
                 _leaveRequest.GetByEmpId(empId);
@@ -37,7 +46,7 @@ namespace BusinessLayer
 
 
         //GET All Request Details 
-        public IEnumerable<LeaveRequest> GetAllRequests()
+        public IEnumerable<EmployeeLeave> GetAllRequests()
         {
             try
             {
@@ -50,7 +59,7 @@ namespace BusinessLayer
         }
 
         //Add Leave Request
-        public async Task<LeaveRequest> CreateLeaveRequest(LeaveRequest leaveRequest)
+        public async Task<EmployeeLeave> CreateLeaveRequest(EmployeeLeave leaveRequest)
         {
             return await _leaveRequest.Create(leaveRequest);
         }
@@ -58,7 +67,6 @@ namespace BusinessLayer
         //Delete Leave Request 
         public bool DeleteRequest(int Id)
         {
-
             try
             {
                 var DataList = _leaveRequest.GetAll().Where(x => x.Id == Id).ToList();
@@ -68,29 +76,32 @@ namespace BusinessLayer
                 }
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return true;
+                
+                return false; ;
             }
 
         }
 
         //Update Request Details
-        public bool UpdateRequest(LeaveRequest leaveRequest)
+        public bool UpdateRequest(EmployeeLeave leaveRequest)
         {
             try
             {
-                if (_leaveRequest.GetAll().Any(x => x.Employee_Id == leaveRequest.Employee_Id 
-                    && x.Approved==false))
+                if (_leaveRequest.GetAll().Any(x => x.EmployeeId == leaveRequest.EmployeeId 
+                    && x.IsApproved==false))
                 {
                     _leaveRequest.Update(leaveRequest);
                 }
+                return true;
             }
             catch (Exception ex)
             {
-                throw;
+               
+                return false;
             }
-            return true;
+           
         }
 
     }

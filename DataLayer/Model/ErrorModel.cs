@@ -8,8 +8,7 @@ namespace DataLayer.Model
 {
     public class ErrorModel
     {
-        public string Request_Id { get; set; }
+        public string ErrorMessage { get; set; }
 
-        public bool ShowRequest_Id => !string.IsNullOrEmpty(Request_Id);
     }
 }

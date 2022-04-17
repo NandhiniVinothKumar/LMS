@@ -15,7 +15,7 @@ namespace DataLayer.Interface
         public IEnumerable<T> GetAll();
 
         public T GetById(int Id);
-        public T GetByEmpId(string empId);
+        public T GetByEmpId(int empId);
 
         public T GetByName(string name);
 

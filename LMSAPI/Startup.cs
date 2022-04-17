@@ -18,6 +18,7 @@ using AutoMapper;
 using DataLayer.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.OpenApi.Models;
+using System.IO;
 
 namespace LMSAPI
 {
@@ -35,13 +36,13 @@ namespace LMSAPI
         {
             if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
             {
-                services.AddDbContext<ApplicationDbContext>(options =>
+                services.AddDbContext<EmployeeLoginContext>(options =>
                options.UseSqlServer(
                    Configuration.GetConnectionString("AWSConnection")));
             }
             else
             {
-                services.AddDbContext<ApplicationDbContext>(options =>
+                services.AddDbContext<EmployeeLoginContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
             }
@@ -49,15 +50,15 @@ namespace LMSAPI
 
             //Email Settings Section
             services.Configure<EmailSettings>(Configuration.GetSection("EmailSettings"));
-            services.AddSingleton<IEmailSender, EmailService>();
+            services.AddTransient<IMailRepository, EmailService>();
 
-           
+
 
             services.AddHttpClient();
 
             services.AddControllers();
 
-            services.AddTransient<IRepository<LeaveRequest>, LeaveRequestRepository>();
+            services.AddTransient<IRepository<EmployeeLeave>, LeaveRequestRepository>();
             services.AddTransient<LeaveRequestService, LeaveRequestService>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSwaggerGen(c =>
@@ -67,8 +68,10 @@ namespace LMSAPI
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
+            var path = Directory.GetCurrentDirectory();
+           loggerFactory.AddFile($"{path}\\Logs\\Log.txt");
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
