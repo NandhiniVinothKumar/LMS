@@ -90,7 +90,7 @@ namespace BusinessLayer
             try
             {
                 if (_leaveRequest.GetAll().Any(x => x.EmployeeId == leaveRequest.EmployeeId 
-                    && x.IsApproved==false))
+                    && (x.IsApproved == false || x.IsApproved == null)))
                 {
                     _leaveRequest.Update(leaveRequest);
                 }

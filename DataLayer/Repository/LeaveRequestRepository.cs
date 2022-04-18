@@ -64,7 +64,7 @@ namespace DataLayer.Repository
         public void Update(EmployeeLeave leaveRequest)
         {
             var request = _dbContext.EmployeeLeaves.FirstOrDefault(x => x.EmployeeId == leaveRequest.EmployeeId
-                    && x.IsApproved == false);
+                    && (x.IsApproved == false||x.IsApproved==null));
             if (request != null)
             {
                 
